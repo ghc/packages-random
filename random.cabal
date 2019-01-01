@@ -75,9 +75,9 @@ library
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.8 && <4.12
+  build-depends:       base >=4.8 && <4.14
                       ,ghc-prim
-                      ,entropy == 0.3.*
+                      ,entropy == 0.4.*
                       ,numeric-extras == 0.1.*
                       ,primitive >= 0.6
                       ,transformers >= 0.2

@@ -66,8 +66,9 @@ module System.Random
 
         -- * Random values of various types
         , Random ( random,   randomR,
-                   randoms,  randomRs,
-                   randomIO, randomRIO )
+                   randoms,  randomRs
+                   --randomIO, randomRIO
+                   )
 
         -- * References
         -- $references
@@ -83,17 +84,17 @@ import Foreign.C.Types
 
 
 
---import Data.Ratio       ( numerator, denominator )
+import Data.Ratio       ( numerator, denominator )
 
---import Data.Char        ( isSpace, chr, ord )
---import System.IO.Unsafe ( unsafePerformIO )
---import Data.IORef       ( IORef, newIORef, readIORef, writeIORef )
+import Data.Char        ( isSpace, chr, ord )
+import System.IO.Unsafe ( unsafePerformIO )
+import Data.IORef       ( IORef, newIORef, readIORef, writeIORef )
 #if MIN_VERSION_base (4,6,0)
---import Data.IORef       ( atomicModifyIORef' )
+import Data.IORef       ( atomicModifyIORef' )
 #else
 import Data.IORef       ( atomicModifyIORef )
 #endif
---import Numeric          ( readDec )
+import Numeric          ( readDec )
 
 #ifdef __GLASGOW_HASKELL__
 import GHC.Exts         ( build )
@@ -134,7 +135,7 @@ class RandomGen g where
    --
    -- * If @(a,b) = 'genRange' g@, then @a < b@.
    --
-   -- * 'genRange' always returns a pair of defined 'Int's.
+   -- * 'genRange' always returns a pair of defined 'Word64's.
    --
    -- The second condition ensures that 'genRange' cannot examine its
    -- argument, and hence the value it returns can be determined only by the
@@ -143,7 +144,7 @@ class RandomGen g where
    -- being concerned that the generator returned by (say) 'next' might have
    -- a different range to the generator passed to 'next'.
    --
-   -- The default definition spans the full range of 'Int'.
+   -- The default definition spans the full range of 'Word64'.
    genRange :: g -> (Word64,Word64)
 
    -- default method
@@ -294,12 +295,12 @@ class Random a where
 
   -- | A variant of 'randomR' that uses the global random number generator
   -- (see "System.Random#globalrng").
-  randomRIO :: (a,a) -> IO a
+  --randomRIO :: (a,a) -> IO a
   --randomRIO range  = getStdRandom (randomR range)
 
   -- | A variant of 'random' that uses the global random number generator
   -- (see "System.Random#globalrng").
-  randomIO  :: IO a
+  --randomIO  :: IO a
   --randomIO         = getStdRandom random
 
 -- | Produce an infinite list-equivalent of random values.
@@ -354,10 +355,10 @@ instance Random CIntMax    where randomR = randomIvalIntegral; random = randomBo
 instance Random CUIntMax   where randomR = randomIvalIntegral; random = randomBounded
 
 instance Random Char where
-  --randomR (a,b) g =
-  --     case (randomIvalInteger (toInteger (ord a), toInteger (ord b)) g) of
-  --       (x,g') -> (chr x, g')
-  --random g        = randomR (minBound,maxBound) g
+  randomR (a,b) g =
+       case (randomIvalInteger (toInteger (ord a), toInteger (ord b)) g) of
+         (x,g') -> (chr x, g')
+  random g        = randomR (minBound,maxBound) g
 
 instance Random Bool where
   randomR (a,b) g =
